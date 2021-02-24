@@ -5,21 +5,21 @@ import numpy as np
 from scipy.special import expit
 
 
-def _relu_function(x):
+def _relu_function(x: np.ndarray):
     return np.maximum(x, 0)
 
 
-def _relu_derivative(x):
+def _relu_derivative(x: np.ndarray):
     x[x <= 0] = 0
     x[x > 0] = 1
     return x
 
 
-def _sigmoid_function(x):
+def _sigmoid_function(x: np.ndarray):
     return expit(x)
 
 
-def _sigmoid_derivative(x):
+def _sigmoid_derivative(x: np.ndarray):
     f = _sigmoid_function
     return f(x) * (1 - f(x))
 
@@ -254,7 +254,7 @@ class Perceptron:
             gradient = (next_layer.error * next_layer.activation_function.df(next_layer.input)) @ layer.output.T
             layer.weights += self.learning_rate * gradient
 
-    def predict(self, data: List[int]):
+    def predict(self, data: List[int]) -> List[int]:
         """
         Get a neural network response
 
@@ -267,8 +267,7 @@ class Perceptron:
             data = self.normalize(data)
 
         response = self.__query(data)
-
-        return response
+        return response.reshape(response.shape[1]).tolist()
 
 
 def pairwise(iterable):
