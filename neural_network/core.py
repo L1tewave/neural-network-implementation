@@ -66,14 +66,17 @@ class Dense:
 
         self.input = None
         self.__output = None
-        self.error = None
+        self.__error = None
 
     def initialize_weights(self, next_layer_neurons: int) -> None:
         matrix_size = (next_layer_neurons, self.neurons + 1) if self.use_bias else (next_layer_neurons, self.neurons)
         self.weights = np.random.normal(loc=0.0, scale=pow(matrix_size[1], -0.5), size=matrix_size)
 
-    def calculate_next_layer_input(self):
-        return self.weights @ self.output
+    def is_first(self) -> bool:
+        return self.activation_function is None
+
+    def is_last(self) -> bool:
+        return self.weights is None
 
     @property
     def neurons(self) -> int:
@@ -94,13 +97,24 @@ class Dense:
         else:
             self.__output = value
 
+    @property
+    def error(self):
+        if self.use_bias:
+            return np.delete(self.__error, len(self.__error[0]) - 1, axis=0)
+        return self.__error
+
+    @error.setter
+    def error(self, value):
+        self.__error = value
+
     def __repr__(self):
+        activation_function_name = self.activation_function.name if not self.is_first() else None
         return f"Fully-connected layer [" \
                f"neurons = {self.neurons}, " \
                f"use_bias = {self.use_bias}, " \
-               f"First layer? = {True if self.input is None else False}, " \
-               f"Last layer? = {True if self.weights is None else False}, " \
-               f"activation function = {self.activation_function.name}" \
+               f"First layer? = {self.is_first()}, " \
+               f"Last layer? = {self.is_last()}, " \
+               f"activation function = {activation_function_name}" \
                f"]"
 
 
@@ -227,14 +241,14 @@ class Perceptron:
                     self.__backpropagation(errors, batch_size)
                     errors = []
 
-    def __query(self, data):
+    def __query(self, data) -> np.ndarray:
         """
         The transmitted data passes through the entire network to get response.
         """
         self.layers[FIRST_LAYER].output = convert_to_vector(data)
 
         for layer, next_layer in pairwise(self.layers):
-            next_layer.input = layer.calculate_next_layer_input()
+            next_layer.input = layer.weights @ layer.output
             next_layer.output = next_layer.activation_function.f(next_layer.input)
 
         return self.layers[LAST_LAYER].output
