@@ -6,11 +6,13 @@ from scipy.special import expit
 
 
 def _relu_function(x):
-    return 0 if x <= 0 else x
+    return np.maximum(x, 0)
 
 
 def _relu_derivative(x):
-    return 0 if x < 0 else 1
+    x[x <= 0] = 0
+    x[x > 0] = 1
+    return x
 
 
 def _sigmoid_function(x):
@@ -63,12 +65,15 @@ class Dense:
         self.weights = None
 
         self.input = None
-        self.output = None
+        self.__output = None
         self.error = None
 
     def initialize_weights(self, next_layer_neurons: int) -> None:
         matrix_size = (next_layer_neurons, self.neurons + 1) if self.use_bias else (next_layer_neurons, self.neurons)
         self.weights = np.random.normal(loc=0.0, scale=pow(matrix_size[1], -0.5), size=matrix_size)
+
+    def calculate_next_layer_input(self):
+        return self.weights @ self.output
 
     @property
     def neurons(self) -> int:
@@ -77,6 +82,17 @@ class Dense:
     @property
     def activation_function(self) -> ActivationFunction:
         return self.__activation_function
+
+    @property
+    def output(self):
+        return self.__output
+
+    @output.setter
+    def output(self, value):
+        if self.use_bias:
+            self.__output = np.vstack((value, 1))
+        else:
+            self.__output = value
 
     def __repr__(self):
         return f"Fully-connected layer [" \
@@ -218,7 +234,7 @@ class Perceptron:
         self.layers[FIRST_LAYER].output = convert_to_vector(data)
 
         for layer, next_layer in pairwise(self.layers):
-            next_layer.input = layer.weights @ layer.output
+            next_layer.input = layer.calculate_next_layer_input()
             next_layer.output = next_layer.activation_function.f(next_layer.input)
 
         return self.layers[LAST_LAYER].output
