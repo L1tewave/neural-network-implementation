@@ -123,32 +123,34 @@ class Perceptron:
     """
     Multilayer perceptron class
     """
+    normalize: Optional[Callable]
+    learning_rate: float
+    layers: List[Dense]
 
     def __init__(self, layers: List[Dense], learning_rate: float):
 
         if len(layers) < MINIMUM_LAYER_COUNT:
             raise ValueError("The minimum allowable number of layers is "
                              f"{MINIMUM_LAYER_COUNT}. You passed on: {len(layers)}")
-        if layers[LAST_LAYER].use_bias is True:
-            raise Warning("The last layer does not need bias")
-        if not 0 < learning_rate <= 1:
-            raise ValueError(f"Learning rate must be in must be within (0, 1], not {learning_rate}")
 
+        if layers[LAST_LAYER].use_bias is True:
+            raise ValueError("The last layer does not need bias!")
+
+        if not 0 < learning_rate <= 1:
+            raise ValueError(f"Learning rate must be within (0, 1], not {learning_rate}")
+
+        self.normalize = None
         self.learning_rate = learning_rate
+        self.layers = layers
 
         for layer, next_layer in pairwise(layers):
             layer.initialize_weights(next_layer.neurons)
 
-        self.layers = layers
-        self.layers_count = len(layers)
-
-        self.normalize: Optional[Callable] = None
-
     def __query(self, data) -> np.ndarray:
         """
-        The transmitted data passes through the entire network to get response.
+        The transmitted data passes through the entire network to get response
         """
-        self.layers[FIRST_LAYER].output = convert_to_vector(data)
+        self.layers[FIRST_LAYER].output = data
 
         for layer, next_layer in pairwise(self.layers):
             next_layer.input = layer.weights @ layer.output
@@ -171,14 +173,14 @@ class Perceptron:
             gradient = (next_layer.error * next_layer.activation_function.df(next_layer.input)) @ layer.output.T
             layer.weights += self.learning_rate * gradient
 
-    def train(self, inputs: List[List[int]], outputs: List[List[int]], batch_size: int = 10, epochs: int = 5,
-              shuffle: bool = False, normalize: bool = True) -> None:
+    def train(self, inputs: Union[List[List[int]], np.ndarray], outputs: Union[List[List[int]], np.ndarray],
+              batch_size: int = 10, epochs: int = 5, shuffle: bool = True, normalize: bool = True) -> None:
         """
-        Neural network training.
+        Neural network training
 
-        :param inputs: List of lists with input data
+        :param inputs: List of lists or 2d-numpy-array with input data
 
-        :param outputs: List of lists with the expected output
+        :param outputs: List of lists or 2d-numpy-array with expected output
 
         :param batch_size: Number of training sessions in one batch
 
@@ -195,12 +197,14 @@ class Perceptron:
         for index, input_ in enumerate(inputs):
             if len(input_) == self.layers[FIRST_LAYER].neurons:
                 continue
-            raise ValueError(f"Input data with index {index} contain not enough data!")
+            raise ValueError(f"Input data '{input_}' (at index {index}) contain not enough data! "
+                             f"Its length must be equal to the number of neurons on the input layer")
 
         for index, output in enumerate(outputs):
             if len(output) == self.layers[LAST_LAYER].neurons:
                 continue
-            raise ValueError(f"Output data with index {index} contain not enough data!")
+            raise ValueError(f"Output data '{output}' (at index {index}) contain not enough data! "
+                             f"Its length must be equal to the number of neurons on the output layer")
 
         training_dataset = np.array(inputs)
         training_quantity = len(training_dataset)
@@ -208,7 +212,7 @@ class Perceptron:
         if normalize is True:
             min_value = training_dataset.min()
             max_value = training_dataset.max()
-            self.normalize = make_normalization_function(min_value, max_value, scope=(-1, 1))
+            self.normalize = make_normalization_function(min_value, max_value, scope=(0, 1))
             training_dataset = self.normalize(training_dataset)
 
         expected_outputs = np.array(outputs)
@@ -223,16 +227,17 @@ class Perceptron:
                 training_dataset, expected_outputs = shuffle_(training_dataset, expected_outputs)
 
             for index, data, expected in zip(range(1, training_quantity + 1), training_dataset, expected_outputs):
-
+                actual = self.__query(convert_to_vector(data))
                 expected = convert_to_vector(expected)
-                actual = self.__query(data)
                 errors.append(expected - actual)
 
-                if index % batch_size == 0:
-                    self.__backpropagation(errors, batch_size)
-                    errors = []
+                if not index % batch_size == 0:
+                    continue
 
-    def predict(self, data: List[int]) -> List[int]:
+                self.__backpropagation(errors, batch_size)
+                errors = []
+
+    def predict(self, data: Union[List[int], np.ndarray]) -> List[int]:
         """
         Get a neural network response
 
@@ -241,8 +246,11 @@ class Perceptron:
         """
         if len(data) != self.layers[FIRST_LAYER].neurons:
             raise ValueError(f"Input data contain not enough data to predict (less than input neurons count)!")
+
+        data = convert_to_vector(data)
+
         if self.normalize is not None:
             data = self.normalize(data)
 
-        response = self.__query(data)
-        return response.reshape(response.shape[1]).tolist()
+        response = self.__query(data)  # Response is vector 2d-numpy-array
+        return response.reshape(response.shape[0]).tolist()

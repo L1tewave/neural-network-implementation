@@ -9,7 +9,8 @@ layers = [
 ]
 perceptron = Perceptron(layers, learning_rate=0.5)
 
-training_dataset = [[-0.9, -0.9], [-0.9, 1], [1, -0.9], [1, 1]]
+
+training_dataset = [[-0.9, -0.9], [-0.9, 1], [1, -0.9], [1.0, 1]]
 expected_results = [[0], [0], [0], [1]]
 
 perceptron.train(training_dataset, expected_results, batch_size=2,
