@@ -10,7 +10,7 @@ def convert_to_vector(data):
     Convert data to 2d-numpy-vector
 
     Example of use
-    -------------
+    --------------
     >>> vector = convert_to_vector([1, 2, 3])
     >>> print(vector)
     array([[1],
@@ -27,7 +27,7 @@ def make_batches(container, batch_size=1):
     Splits the sequence into parts
 
     Example of use
-    -------------
+    --------------
     >>> make_batches([1, 2, 3], 2)
     [[1, 2], [3]]
     """
@@ -62,7 +62,7 @@ def pairwise(iterable):
     :param iterable: object that can be iterated over
 
     Example of use
-    -------------
+    --------------
     >>> array = [0, 1, 2]
     >>> for c, d in pairwise(array):
     ...       print(c, d)

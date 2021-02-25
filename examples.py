@@ -20,12 +20,12 @@ print("'Logical conjunction' task:")
 
 for expected, test in zip(expected_results, training_dataset):
     actual = perceptron.predict(test)
-    print(f"test_input={test} expected={expected} actual={actual}")
+    print(f"\ttest_input={test} expected={expected} actual={actual}")
 
 
 layers = [
     Dense(2),
-    Dense(6, activation_function='relu'),
+    Dense(10, activation_function='relu'),
     Dense(1, activation_function='sigmoid'),
 ]
 multilayer_perceptron = Perceptron(layers, learning_rate=0.2)
@@ -40,4 +40,4 @@ print("\n'Exclusive or (XOR)' task:")
 
 for expected, test in zip(expected_results, training_dataset):
     actual = multilayer_perceptron.predict(test)
-    print(f"test_input={test} expected={expected} actual={actual}")
+    print(f"\ttest_input={test} expected={expected} actual={actual}")
