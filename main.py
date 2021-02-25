@@ -23,8 +23,8 @@ for expected, test in zip(expected_results, training_dataset):
 
 
 layers = [
-    Dense(2),
-    Dense(100, activation_function='relu'),
+    Dense(2, use_bias=True),
+    Dense(6, activation_function='relu', use_bias=True),
     Dense(1, activation_function='sigmoid'),
 ]
 multilayer_perceptron = Perceptron(layers, learning_rate=0.2)
@@ -40,4 +40,3 @@ print("\n'Exclusive or (XOR)' task:")
 for expected, test in zip(expected_results, training_dataset):
     actual = multilayer_perceptron.predict(test)
     print(f"test_input={test} expected={expected} actual={actual}")
-

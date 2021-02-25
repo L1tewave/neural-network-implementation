@@ -37,37 +37,64 @@ class Dense:
         self.__error = None
 
     def initialize_weights(self, next_layer_neurons: int) -> None:
+        """
+        Initialising a matrix of weights with a normal distribution
+
+        :param next_layer_neurons: Number of neurons on the next layer
+        """
         matrix_size = (next_layer_neurons, self.neurons + 1) if self.use_bias else (next_layer_neurons, self.neurons)
         self.weights = np.random.normal(loc=0.0, scale=pow(matrix_size[1], -0.5), size=matrix_size)
 
     def is_first(self) -> bool:
+        """
+         Checks if this is the first layer.
+
+        The first layer has no activation function (and input)
+        """
         return self.activation_function is None
 
     def is_last(self) -> bool:
+        """
+        Checks if this is the last layer.
+
+        The last layer has no weights
+        """
         return self.weights is None
 
     @property
     def neurons(self) -> int:
+        """
+        The number of neurons on this layer (without bias anyway)
+        """
         return self.__neurons
 
     @property
-    def activation_function(self) -> ActivationFunction:
+    def activation_function(self) -> Optional[ActivationFunction]:
+        """
+        Layer activation function
+        """
         return self.__activation_function
 
     @property
     def output(self) -> np.ndarray:
+        """
+        Input after activation function
+        """
         return self.__output
 
     @output.setter
     def output(self, value):
-        if self.use_bias:
+        if self.use_bias:   # Bias is added for use on the next layer
             self.__output = np.vstack((value, 1))
         else:
             self.__output = value
 
     @property
     def error(self) -> np.ndarray:
-        if self.use_bias:
+        """
+        Just error used for backpropagation algorithm
+        """
+        if self.use_bias:   # The error for bias is removed to correctly update the weights on the previous layer
             return self.__error[:-1, :]
         return self.__error
 
@@ -137,7 +164,7 @@ class Perceptron:
         :param batch_size: Batch size
         """
         mean_error = sum(errors) / batch_size
-        self.layers[LAST_LAYER].error = np.array(mean_error, ndmin=2)
+        self.layers[LAST_LAYER].error = mean_error
 
         for next_layer, layer in pairwise(reversed(self.layers)):
             layer.error = layer.weights.T @ next_layer.error
@@ -179,7 +206,8 @@ class Perceptron:
         training_quantity = len(training_dataset)
 
         if normalize is True:
-            min_value, max_value = np.amin(training_dataset), np.amax(training_dataset)
+            min_value = training_dataset.min()
+            max_value = training_dataset.max()
             self.normalize = make_normalization_function(min_value, max_value, scope=(-1, 1))
             training_dataset = self.normalize(training_dataset)
 
