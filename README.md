@@ -14,7 +14,6 @@ It's works fine on Windows. It may be different on other operating systems.
 
 2. After this, the examples can be run:
 
-![Alt Text](https://media.giphy.com/media/3qtk1TO7LM6nigiTVx/giphy.gif)
-
+![Alt Text](https://media.giphy.com/media/ZKGGljlXaBTd03Ygc3/giphy.gif)
 
 3. Make your own neural network :)
