@@ -34,7 +34,7 @@ training_dataset = [[1, 1], [1, 2], [2, 1], [2, 2]]
 expected_results = [[0], [1], [1], [0]]
 
 multilayer_perceptron.train(training_dataset, expected_results, batch_size=1,
-                            epochs=1000, shuffle=True, normalize=True)
+                            epochs=1000, scope=(-1, 1))
 
 print("\n'Exclusive or (XOR)' task:")
 

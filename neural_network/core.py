@@ -3,7 +3,7 @@ The core contains the definition of the perceptron class and the layer class
 """
 from __future__ import annotations
 import numpy as np
-from typing import Callable, List, Union, Optional
+from typing import Callable, List, Tuple, Union, Optional
 
 from neural_network.activation_functions import ActivationFunction
 from neural_network.utils import convert_to_vector, is_empty, make_normalization_function, pairwise, shuffle_
@@ -173,8 +173,15 @@ class Perceptron:
             gradient = (next_layer.error * next_layer.activation_function.df(next_layer.input)) @ layer.output.T
             layer.weights += self.learning_rate * gradient
 
-    def train(self, inputs: Union[List[List[int]], np.ndarray], outputs: Union[List[List[int]], np.ndarray],
-              batch_size: int = 10, epochs: int = 5, shuffle: bool = True, normalize: bool = True) -> None:
+    def train(self,
+              inputs: Union[List[List[int]], np.ndarray],
+              outputs: Union[List[List[int]], np.ndarray],
+              batch_size: int = 10,
+              epochs: int = 5,
+              shuffle: bool = True,
+              normalize: bool = True,
+              scope: Tuple[int, int] = (0, 1),
+              ) -> None:
         """
         Neural network training
 
@@ -189,6 +196,8 @@ class Perceptron:
         :param shuffle: Whether to shuffle data between epochs
 
         :param normalize: Whether to normalize the data
+
+        :param scope: Data normalisation range, used only with param normalize=True
         """
         if len(inputs) != len(outputs):
             raise ValueError(f"The input data length {len(inputs)} must be "
@@ -212,7 +221,7 @@ class Perceptron:
         if normalize is True:
             min_value = training_dataset.min()
             max_value = training_dataset.max()
-            self.normalize = make_normalization_function(min_value, max_value, scope=(-1, 1))
+            self.normalize = make_normalization_function(min_value, max_value, scope=scope)
             training_dataset = self.normalize(training_dataset)
 
         expected_outputs = np.array(outputs)
