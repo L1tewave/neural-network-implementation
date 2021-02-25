@@ -2,10 +2,10 @@
 Side functions
 """
 import numpy as np
-from typing import List, Tuple, Union
+from typing import Callable, Tuple
 
 
-def convert_to_vector(data: Union[List[float], np.ndarray]) -> np.ndarray:
+def convert_to_vector(data):
     """
     Convert data to 2d-numpy-vector
 
@@ -22,25 +22,37 @@ def convert_to_vector(data: Union[List[float], np.ndarray]) -> np.ndarray:
     return np.array(data, ndmin=2).T
 
 
-def is_empty(container):
+def make_batches(container, batch_size=1):
     """
-    Checking the container for emptiness
+    Splits the sequence into parts
 
     Example of use
     -------------
-    >>> is_empty([1, 2])
-    False
-    >>> is_empty(dict())
-    True
+    >>> make_batches([1, 2, 3], 2)
+    [[1, 2], [3]]
     """
-    return len(container) == 0
+    return [container[i: i + batch_size] for i in range(0, len(container), batch_size)]
 
 
-def make_normalization_function(min_value: float, max_value: float, scope: Tuple[float, float] = (0, 1)):
+def make_normalization_function(min_value: float, max_value: float, scope=(0, 1)) -> Callable:
+    """
+    :param min_value: Min value in data
+    :param max_value: Max value in data
+    :param scope: Normalization range
+    :return: normalization function
+    """
     def normalize(x):
         return scope[0] + (x - min_value) / (max_value - min_value) * (scope[1] - scope[0])
-
     return normalize
+
+
+def mse(expected: np.ndarray, actual: np.ndarray):
+    """
+    Mean square error
+    """
+    n = expected.shape[0]
+
+    return (1 / n * sum((expected - actual) ** 2))[0]
 
 
 def pairwise(iterable):

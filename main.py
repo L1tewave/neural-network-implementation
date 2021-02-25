@@ -25,7 +25,7 @@ for expected, test in zip(expected_results, training_dataset):
 
 layers = [
     Dense(2),
-    Dense(10, activation_function='relu'),
+    Dense(6, activation_function='relu'),
     Dense(1, activation_function='sigmoid'),
 ]
 multilayer_perceptron = Perceptron(layers, learning_rate=0.2)

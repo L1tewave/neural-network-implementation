@@ -3,26 +3,27 @@ Here, the definition of activation functions
 """
 from __future__ import annotations
 from enum import Enum
-from numpy import ndarray, maximum
+from numpy import maximum
 from scipy.special import expit
 from typing import Callable, Optional
 
 
-def _relu_function(x: ndarray):
+# The functions are used with numpy arrays
+def _relu_function(x):
     return maximum(x, 0)
 
 
-def _relu_derivative(x: ndarray):
+def _relu_derivative(x):
     x[x <= 0] = 0
     x[x > 0] = 1
     return x
 
 
-def _sigmoid_function(x: ndarray):
+def _sigmoid_function(x):
     return expit(x)
 
 
-def _sigmoid_derivative(x: ndarray):
+def _sigmoid_derivative(x):
     f = _sigmoid_function
     return f(x) * (1 - f(x))
 

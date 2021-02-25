@@ -3,10 +3,10 @@ The core contains the definition of the perceptron class and the layer class
 """
 from __future__ import annotations
 import numpy as np
-from typing import Callable, List, Tuple, Union, Optional
+from typing import Callable, List, Union, Optional
 
 from neural_network.activation_functions import ActivationFunction
-from neural_network.utils import convert_to_vector, is_empty, make_normalization_function, pairwise, shuffle_
+from neural_network.utils import convert_to_vector, make_batches, make_normalization_function, mse, pairwise, shuffle_
 
 
 class Dense:
@@ -14,7 +14,9 @@ class Dense:
     Fully-connected layer of neurons
     """
 
-    def __init__(self, neurons: int, activation_function: Union[str, ActivationFunction, None] = None,
+    def __init__(self,
+                 neurons: int,
+                 activation_function: Union[str, ActivationFunction, None] = None,
                  use_bias: bool = False):
         if any([neurons < 0, not isinstance(neurons, int)]):
             raise ValueError("The number of neurons must be a positive integer")
@@ -84,7 +86,7 @@ class Dense:
 
     @output.setter
     def output(self, value):
-        if self.use_bias:   # Bias is added for use on the next layer
+        if self.use_bias:  # Bias is added for use on the next layer
             self.__output = np.vstack((value, 1))
         else:
             self.__output = value
@@ -94,7 +96,7 @@ class Dense:
         """
         Just error used for backpropagation algorithm
         """
-        if self.use_bias:   # The error for bias is removed to correctly update the weights on the previous layer
+        if self.use_bias:  # The error for bias is removed to correctly update the weights on the previous layer
             return self.__error[:-1, :]
         return self.__error
 
@@ -126,6 +128,7 @@ class Perceptron:
     normalize: Optional[Callable]
     learning_rate: float
     layers: List[Dense]
+    mse_by_epoch: List[float]
 
     def __init__(self, layers: List[Dense], learning_rate: float):
 
@@ -142,11 +145,12 @@ class Perceptron:
         self.normalize = None
         self.learning_rate = learning_rate
         self.layers = layers
+        self.mse_by_epoch = []
 
         for layer, next_layer in pairwise(layers):
             layer.initialize_weights(next_layer.neurons)
 
-    def __query(self, data) -> np.ndarray:
+    def __query(self, data):
         """
         The transmitted data passes through the entire network to get response
         """
@@ -174,14 +178,13 @@ class Perceptron:
             layer.weights += self.learning_rate * gradient
 
     def train(self,
-              inputs: Union[List[List[int]], np.ndarray],
-              outputs: Union[List[List[int]], np.ndarray],
+              inputs,
+              outputs,
               batch_size: int = 10,
               epochs: int = 5,
               shuffle: bool = True,
               normalize: bool = True,
-              scope: Tuple[int, int] = (0, 1),
-              ) -> None:
+              scope=(0, 1)):
         """
         Neural network training
 
@@ -216,7 +219,7 @@ class Perceptron:
                              f"Its length must be equal to the number of neurons on the output layer")
 
         training_dataset = np.array(inputs)
-        training_quantity = len(training_dataset)
+        expected_outputs = np.array(outputs)
 
         if normalize is True:
             min_value = training_dataset.min()
@@ -224,29 +227,23 @@ class Perceptron:
             self.normalize = make_normalization_function(min_value, max_value, scope=scope)
             training_dataset = self.normalize(training_dataset)
 
-        expected_outputs = np.array(outputs)
-
-        errors = []
         for _ in range(epochs):
-            if not is_empty(errors):
-                self.__backpropagation(errors, batch_size)
-                errors = []
-
             if shuffle is True:
                 training_dataset, expected_outputs = shuffle_(training_dataset, expected_outputs)
 
-            for index, data, expected in zip(range(1, training_quantity + 1), training_dataset, expected_outputs):
-                actual = self.__query(convert_to_vector(data))
-                expected = convert_to_vector(expected)
-                errors.append(expected - actual)
+            batches = make_batches(training_dataset, batch_size), make_batches(expected_outputs, batch_size)
 
-                if not index % batch_size == 0:
-                    continue
-
-                self.__backpropagation(errors, batch_size)
+            actual = expected = None
+            for batch in zip(*batches):
                 errors = []
+                for data, expected in zip(*batch):
+                    actual = self.__query(convert_to_vector(data))
+                    expected = convert_to_vector(expected)
+                    errors.append(expected - actual)
+                self.__backpropagation(errors, batch_size)
+            self.mse_by_epoch.append(mse(expected, actual))
 
-    def predict(self, data: Union[List[int], np.ndarray]) -> List[int]:
+    def predict(self, data) -> List[float]:
         """
         Get a neural network response
 
