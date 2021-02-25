@@ -212,7 +212,7 @@ class Perceptron:
         if normalize is True:
             min_value = training_dataset.min()
             max_value = training_dataset.max()
-            self.normalize = make_normalization_function(min_value, max_value, scope=(0, 1))
+            self.normalize = make_normalization_function(min_value, max_value, scope=(-1, 1))
             training_dataset = self.normalize(training_dataset)
 
         expected_outputs = np.array(outputs)
