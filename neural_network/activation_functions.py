@@ -3,14 +3,13 @@ Here, the definition of activation functions
 """
 from __future__ import annotations
 from enum import Enum
-from numpy import maximum
-from scipy.special import expit
+import numpy as np
 from typing import Callable
 
 
 # The functions are used with numpy arrays
 def _relu_function(x):
-    return maximum(x, 0)
+    return np.maximum(x, 0)
 
 
 def _relu_derivative(x):
@@ -20,7 +19,7 @@ def _relu_derivative(x):
 
 
 def _sigmoid_function(x):
-    return expit(x)
+    return 1 / (1 + np.exp(-x))
 
 
 def _sigmoid_derivative(x):
