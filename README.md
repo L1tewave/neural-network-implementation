@@ -16,4 +16,4 @@ It's works fine on Windows. It may be different on other operating systems.
 
 ![Alt Text](https://media.giphy.com/media/0Lyf0xgKUYPBpSBL9Q/giphy.gif)
 
-3. Make your own neural network :)
+3. Make your own neural network :smile:
