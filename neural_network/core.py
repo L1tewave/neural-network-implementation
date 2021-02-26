@@ -18,9 +18,10 @@ class Dense:
                  neurons: int,
                  activation_function: Union[str, ActivationFunction, None] = None,
                  use_bias: bool = False):
-        if any([neurons < 0, not isinstance(neurons, int)]):
-            raise ValueError("The number of neurons must be a positive integer")
-        self.__neurons = neurons
+        if not isinstance(neurons, int):
+            raise ValueError(f"The number of neurons must be a positive integer, not {type(neurons).__name__}")
+        if neurons < 0:
+            raise ValueError("The number of neurons must be a positive integer, not negative")
 
         if activation_function is None:
             self.__activation_function = None
@@ -29,10 +30,12 @@ class Dense:
         elif isinstance(activation_function, str):
             self.__activation_function = ActivationFunction.get_by_name(activation_function)
         else:
-            raise ValueError(f"This type: {activation_function} of activation function is not available")
+            raise ValueError(f"Activation function must be [None, str, ActivationFunction], "
+                             f"not {type(activation_function).__name__}")
 
-        self.use_bias = use_bias
+        self.__neurons = neurons
         self.weights = None
+        self.use_bias = use_bias
 
         self.input = None
         self.__output = None
@@ -135,17 +138,18 @@ class Perceptron:
         if len(layers) < MINIMUM_LAYER_COUNT:
             raise ValueError("The minimum allowable number of layers is "
                              f"{MINIMUM_LAYER_COUNT}. You passed on: {len(layers)}")
-
+        if layers[FIRST_LAYER].activation_function is not None:
+            raise Warning("The input layer does not need the activation function")
         if layers[LAST_LAYER].use_bias is True:
-            raise ValueError("The last layer does not need bias!")
+            raise Warning("The last layer does not need bias!")
 
         if not 0 < learning_rate <= 1:
             raise ValueError(f"Learning rate must be within (0, 1], not {learning_rate}")
 
         self.normalize = None
+        self.mse_by_epoch = []
         self.learning_rate = learning_rate
         self.layers = layers
-        self.mse_by_epoch = []
 
         for layer, next_layer in pairwise(layers):
             layer.initialize_weights(next_layer.neurons)

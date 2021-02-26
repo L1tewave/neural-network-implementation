@@ -5,7 +5,7 @@ from __future__ import annotations
 from enum import Enum
 from numpy import maximum
 from scipy.special import expit
-from typing import Callable, Optional
+from typing import Callable
 
 
 # The functions are used with numpy arrays
@@ -41,5 +41,9 @@ class ActivationFunction(Enum):
         self.df = df
 
     @staticmethod
-    def get_by_name(name: str) -> Optional[ActivationFunction]:
-        return next((af for af in ActivationFunction if af.name.lower() == name.lower()), None)
+    def get_by_name(name: str) -> ActivationFunction:
+        activation_function = next((af for af in ActivationFunction if af.name.lower() == name.lower()), None)
+        if activation_function is None:
+            raise ValueError(f"Name '{activation_function}' of activation function "
+                             f"does not correspond to any of the presented")
+        return activation_function
