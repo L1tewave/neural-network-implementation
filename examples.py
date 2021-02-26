@@ -1,7 +1,14 @@
 """
-Demonstration of the possibilities of this implementation
+File with two simple examples of neural network training.
+
+The first neural network is trained to solve the problem of logical conjunction.
+A two-layer perceptron is enough to solve this problem.
+
+The second neural network solves the problem of exclusion or.
+This problem already requires 3 layers.
 """
 from neural_network.core import Perceptron, Dense
+
 
 layers = [
     Dense(2, use_bias=True),
@@ -9,18 +16,19 @@ layers = [
 ]
 perceptron = Perceptron(layers, learning_rate=0.5)
 
-training_dataset = [[-0.9, -0.9], [-0.9, 1], [1, -0.9], [1.0, 1]]
+training_dataset = [[-0.9, -0.9], [-0.9, 1], [1, -0.9], [1, 1]]
+# It is necessary to pass the expected results in the list of lists,
+# because the last layer may contain more than one output neuron
 expected_results = [[0], [0], [0], [1]]
 
 perceptron.train(training_dataset, expected_results, batch_size=2,
                  epochs=1000, shuffle=True, normalize=False)
 
-print("'Logical conjunction' task:")
+print("'Logical conjunction (AND)' task:")
 
 for expected, test in zip(expected_results, training_dataset):
     actual = perceptron.predict(test)
-    print(f"\ttest_input={test} expected={expected} actual={actual}")
-
+    print(f"\ttest={test} expected={expected} actual={actual}")
 
 layers = [
     Dense(2),
@@ -39,4 +47,4 @@ print("\n'Exclusive or (XOR)' task:")
 
 for expected, test in zip(expected_results, training_dataset):
     actual = multilayer_perceptron.predict(test)
-    print(f"\ttest_input={test} expected={expected} actual={actual}")
+    print(f"\ttest={test} expected={expected} actual={actual}")

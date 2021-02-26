@@ -42,8 +42,9 @@ class ActivationFunction(Enum):
 
     @staticmethod
     def get_by_name(name: str) -> ActivationFunction:
-        activation_function = next((af for af in ActivationFunction if af.name.lower() == name.lower()), None)
+        activation_function = next((function for function in ActivationFunction
+                                    if function.name.lower() == name.lower()), None)
         if activation_function is None:
-            raise ValueError(f"Name '{activation_function}' of activation function "
-                             f"does not correspond to any of the presented")
+            raise ValueError(f"Name '{name}' of activation function "
+                             f"does not correspond to any of the presented!")
         return activation_function
