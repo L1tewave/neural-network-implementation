@@ -8,6 +8,7 @@ The second neural network solves the problem of exclusion or.
 This problem already requires 3 layers.
 """
 from neural_network.core import Perceptron, Dense
+from neural_network.utils import make_batches
 
 
 layers = [
@@ -26,7 +27,7 @@ perceptron.train(training_dataset, expected_results, batch_size=2,
 
 print("'Logical conjunction (AND)' task:")
 
-for expected, test in zip(expected_results, training_dataset):
+for test, expected in zip(training_dataset, expected_results):
     actual = perceptron.predict(test)
     print(f"\ttest={test} expected={expected} actual={actual}")
 
@@ -38,13 +39,14 @@ layers = [
 multilayer_perceptron = Perceptron(layers, learning_rate=0.2)
 
 training_dataset = [[1, 1], [1, 2], [2, 1], [2, 2]]
-expected_results = [[0], [1], [1], [0]]
+# Alternative to creating a list of lists manually
+expected_results = make_batches([0, 1, 1, 0], batch_size=1)
 
 multilayer_perceptron.train(training_dataset, expected_results, batch_size=1,
                             epochs=1000, scope=(-1, 1))
 
 print("\n'Exclusive or (XOR)' task:")
 
-for expected, test in zip(expected_results, training_dataset):
+for test, expected in zip(training_dataset, expected_results):
     actual = multilayer_perceptron.predict(test)
     print(f"\ttest={test} expected={expected} actual={actual}")
