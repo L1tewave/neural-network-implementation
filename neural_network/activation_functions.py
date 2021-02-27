@@ -27,12 +27,20 @@ def _sigmoid_derivative(x):
     return f(x) * (1 - f(x))
 
 
+def _softplus_function(x):
+    return np.log(1 + np.power(np.e, x))
+
+
+_softplus_derivative = _sigmoid_function
+
+
 class ActivationFunction(Enum):
     """
     A enumeration of activation functions. Each element contains the function and the derivative of the function
     """
     ReLu = ("Rectified linear unit", _relu_function, _relu_derivative)
     Sigmoid = ("Soft step", _sigmoid_function, _sigmoid_derivative)
+    SoftPlus = ("Softplus", _softplus_function, _softplus_derivative)
 
     def __init__(self, nickname: str, f: Callable, df: Callable) -> None:
         self.nickname = nickname

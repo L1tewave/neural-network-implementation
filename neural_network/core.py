@@ -255,12 +255,13 @@ class Perceptron:
         :return: List with output data
         """
         if len(data) != self.layers[FIRST_LAYER].neurons:
-            raise ValueError(f"Input data contain not enough data to predict (less than input neurons count)!")
+            raise ValueError(f"The number of incoming data ({len(data)}) does not correspond "
+                             f"to the number of input neurons ({self.layers[FIRST_LAYER].neurons})!")
 
         data = convert_to_vector(data)
 
         if self.normalize is not None:
             data = self.normalize(data)
 
-        response = self.__query(data)  # Response is vector 2d-numpy-array
-        return response.reshape(response.shape[0]).tolist()
+        response = self.__query(data)  # The response returns as a two-dimensional numpy array
+        return response.flatten().tolist()

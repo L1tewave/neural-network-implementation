@@ -36,6 +36,8 @@ def make_batches(container, batch_size=1):
 
 def make_normalization_function(min_value: float, max_value: float, scope=(0, 1)) -> Callable:
     """
+    Minimax normalization
+
     :param min_value: Min value in data
     :param max_value: Max value in data
     :param scope: Normalization range

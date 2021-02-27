@@ -13,7 +13,7 @@ from neural_network.utils import make_batches
 
 layers = [
     Dense(2, use_bias=True),
-    Dense(1, activation_function='sigmoid'),
+    Dense(1, activation_function='relu'),
 ]
 perceptron = Perceptron(layers, learning_rate=0.5)
 
@@ -29,7 +29,7 @@ print("'Logical conjunction (AND)' task:")
 
 for test, expected in zip(training_dataset, expected_results):
     actual = perceptron.predict(test)
-    print(f"\ttest={test} expected={expected} actual={actual}")
+    print(f"\tTest={test} Expected={expected} Actual={actual}")
 
 layers = [
     Dense(2),
@@ -49,4 +49,4 @@ print("\n'Exclusive or (XOR)' task:")
 
 for test, expected in zip(training_dataset, expected_results):
     actual = multilayer_perceptron.predict(test)
-    print(f"\ttest={test} expected={expected} actual={actual}")
+    print(f"\tTest={test} Expected={expected} Actual={actual}")
