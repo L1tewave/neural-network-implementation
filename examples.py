@@ -13,7 +13,7 @@ from neural_network.utils import make_batches
 
 layers = [
     Dense(2, use_bias=True),
-    Dense(1, activation_function='relu'),
+    Dense(1, activation_function='sigmoid'),
 ]
 perceptron = Perceptron(layers, learning_rate=0.5)
 
@@ -36,7 +36,7 @@ layers = [
     Dense(10, activation_function='relu'),
     Dense(1, activation_function='sigmoid'),
 ]
-multilayer_perceptron = Perceptron(layers, learning_rate=0.2)
+multilayer_perceptron = Perceptron(layers, learning_rate=0.9)
 
 training_dataset = [[1, 1], [1, 2], [2, 1], [2, 2]]
 # Alternative to creating a list of lists manually

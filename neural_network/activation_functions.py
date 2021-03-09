@@ -47,9 +47,9 @@ class ActivationFunction(Enum):
         self.f = f
         self.df = df
 
-    @staticmethod
-    def get_by_name(name: str) -> ActivationFunction:
-        activation_function = next((function for function in ActivationFunction
+    @classmethod
+    def get_by_name(cls, name: str) -> ActivationFunction:
+        activation_function = next((function for function in cls
                                     if function.name.lower() == name.lower()), None)
         if activation_function is None:
             raise ValueError(f"Name '{name}' of activation function "

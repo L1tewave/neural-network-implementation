@@ -19,7 +19,7 @@ class Dense:
                  activation_function: Union[str, ActivationFunction, None] = None,
                  use_bias: bool = False):
         if not isinstance(neurons, int):
-            raise ValueError(f"The number of neurons must be a positive integer, not {type(neurons).__name__}")
+            raise TypeError(f"The number of neurons must be a positive integer, not {type(neurons).__name__}")
         if neurons < 0:
             raise ValueError("The number of neurons must be a positive integer, not negative")
 
@@ -30,8 +30,8 @@ class Dense:
         elif isinstance(activation_function, str):
             self.__activation_function = ActivationFunction.get_by_name(activation_function)
         else:
-            raise ValueError(f"Activation function must be [None, str, ActivationFunction], "
-                             f"not {type(activation_function).__name__}")
+            raise TypeError(f"Activation function must be [None, str, ActivationFunction], "
+                            f"not {type(activation_function).__name__}")
 
         self.__neurons = neurons
         self.weights = None
