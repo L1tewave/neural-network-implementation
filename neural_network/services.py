@@ -1,17 +1,19 @@
 """
 Side functions
 """
+from typing import Callable
+from typing import Tuple
+
 import numpy as np
-from typing import Callable, Tuple
 
 
-def convert_to_vector(data):
+def to_vector(data):
     """
     Convert data to 2d-numpy-vector
 
     Example of use
     --------------
-    >>> vector = convert_to_vector([1, 2, 3])
+    >>> vector = to_vector([1, 2, 3])
     >>> print(vector)
     array([[1],
            [2],

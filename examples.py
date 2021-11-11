@@ -7,8 +7,9 @@ A two-layer perceptron is enough to solve this problem.
 The second neural network solves the problem of exclusion or.
 This problem already requires 3 layers.
 """
+from neural_network.activators import ActivationFunction
 from neural_network.core import Perceptron, Dense
-from neural_network.utils import make_batches
+from neural_network.services import make_batches
 
 
 layers = [
@@ -33,8 +34,8 @@ for test, expected in zip(training_dataset, expected_results):
 
 layers = [
     Dense(2),
-    Dense(10, activation_function='relu'),
-    Dense(1, activation_function='sigmoid'),
+    Dense(10, activation_function=ActivationFunction.ReLu),
+    Dense(1, activation_function=ActivationFunction.Sigmoid),
 ]
 multilayer_perceptron = Perceptron(layers, learning_rate=0.9)
 

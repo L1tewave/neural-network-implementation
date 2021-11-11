@@ -1,13 +1,17 @@
 """
 Here, the definition of activation functions
+
+Functions must be used with numpy arrays!
 """
 from __future__ import annotations
+
 from enum import Enum
-import numpy as np
 from typing import Callable
+from typing import Optional
+
+import numpy as np
 
 
-# The functions are used with numpy arrays
 def _relu_function(x):
     return np.maximum(x, 0)
 
@@ -42,16 +46,15 @@ class ActivationFunction(Enum):
     Sigmoid = ("Soft step", _sigmoid_function, _sigmoid_derivative)
     SoftPlus = ("Softplus", _softplus_function, _softplus_derivative)
 
-    def __init__(self, nickname: str, f: Callable, df: Callable) -> None:
+    def __init__(self, nickname: str, f: Callable, df: Callable):
         self.nickname = nickname
         self.f = f
         self.df = df
 
     @classmethod
-    def get_by_name(cls, name: str) -> ActivationFunction:
-        activation_function = next((function for function in cls
-                                    if function.name.lower() == name.lower()), None)
-        if activation_function is None:
-            raise ValueError(f"Name '{name}' of activation function "
-                             f"does not correspond to any of the presented!")
+    def get_by_name(cls, name: str) -> Optional[ActivationFunction]:
+        """
+        Get ActivationFunction object by name or None, if there is no function with this name
+        """
+        activation_function = next((f for f in cls if f.name.lower() == name.lower()), None)
         return activation_function
