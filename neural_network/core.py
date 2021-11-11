@@ -160,7 +160,7 @@ class Perceptron:
         if layers_count < MINIMUM_LAYER_COUNT:
             raise ValueError("The minimum allowable number of layers is "
                              f"{MINIMUM_LAYER_COUNT}. You passed on: {layers_count}")
-        if not self.first_layer.activation_function:
+        if self.first_layer.activation_function:
             raise Warning("The input layer does not need the activation function")
         if self.last_layer.use_bias:
             raise Warning("The last layer does not need bias!")
