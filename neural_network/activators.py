@@ -57,4 +57,6 @@ class ActivationFunction(Enum):
         Get ActivationFunction object by name or None, if there is no function with this name
         """
         activation_function = next((f for f in cls if f.name.lower() == name.lower()), None)
+        if not activation_function:
+            raise ValueError(f"Non-existing function name: {name}")
         return activation_function

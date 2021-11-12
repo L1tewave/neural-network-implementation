@@ -14,7 +14,7 @@ from neural_network.services import make_batches
 
 layers = [
     Dense(2, use_bias=True),
-    Dense(1, activation_function='sigmoid'),
+    Dense(1, activator='sigmoid'),
 ]
 perceptron = Perceptron(layers, learning_rate=0.5)
 
@@ -34,8 +34,8 @@ for test, expected in zip(training_dataset, expected_results):
 
 layers = [
     Dense(2),
-    Dense(10, activation_function=ActivationFunction.ReLu),
-    Dense(1, activation_function=ActivationFunction.Sigmoid),
+    Dense(10, activator=ActivationFunction.ReLu),
+    Dense(1, activator=ActivationFunction.Sigmoid),
 ]
 multilayer_perceptron = Perceptron(layers, learning_rate=0.9)
 

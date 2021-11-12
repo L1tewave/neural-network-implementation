@@ -20,11 +20,11 @@ class Dense:
     """
     Fully-connected layer of neurons
     """
-    AF_ALLOWED_TYPES = (type(None), str, ActivationFunction)
+    AF_ALLOWED_TYPES = [type(None), str, ActivationFunction]
 
     def __init__(self,
                  neurons: int,
-                 activation_function: Union[str, ActivationFunction, None] = None,
+                 activator: Union[str, ActivationFunction, None] = None,
                  use_bias: bool = False):
         if not isinstance(neurons, int):
             raise TypeError(f"The number of neurons must be a positive integer, not {type(neurons)}")
@@ -40,18 +40,19 @@ class Dense:
         self.__output = None
         self.__error = None
 
-        af_type = type(activation_function)
-        if af_type not in self.AF_ALLOWED_TYPES:
-            raise TypeError(f"Activation function must be one of these types: {self.AF_ALLOWED_TYPES}, "
-                            f"not {af_type}")
+        activator_type = type(activator)
 
-        if not activation_function:
+        if not activator:
             self.__activation_function = None
             return
-        if af_type == str:
-            self.__activation_function = ActivationFunction.get_by_name(activation_function)
+        if activator_type == ActivationFunction:
+            self.__activation_function = activator
             return
-        self.__activation_function = activation_function
+        if activator_type == str:
+            self.__activation_function = ActivationFunction.get_by_name(activator)
+            return
+
+        raise TypeError(f"Activator must be one of these types: {self.AF_ALLOWED_TYPES}, not {activator_type}")
 
     @property
     def neurons(self) -> int:
